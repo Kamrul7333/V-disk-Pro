@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viral Video Gallery</title>
+
+<!-- Google Fonts & Font Awesome Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:#080811;
+    color:#f1f1f1;
+    font-family:'Hind Siliguri', 'Poppins', Arial, sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+  
+  /* ব্যাকগ্রাউন্ড আরজিবি লাইট গ্লো ইফেক্ট */
+  .ambient-glow {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    filter: blur(130px);
+    z-index: 0;
+    opacity: 0.45;
+    pointer-events: none;
+    animation: floatGlow 10s ease-in-out infinite alternate;
+  }
+
+  .glow-1 {
+    background: #ff007f;
+    top: 5%;
+    left: 10%;
+  }
+
+  .glow-2 {
+    background: #00f2fe;
+    top: 30%;
+    right: 10%;
+    animation-delay: -5s;
+  }
+
+  @keyframes floatGlow {
+    0% { transform: scale(1) translate(0, 0); }
+    50% { transform: scale(1.2) translate(30px, 40px); }
+    100% { transform: scale(0.9) translate(-20px, 20px); }
+  }
+
+  /* হেডার এরিয়া (আগের আরজিবি স্টাইল) */
+  .header{
+    padding:35px 15px 15px;
+    text-align:center;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1{
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ff007f, #00f2fe, #7000ff, #ff007f);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rgbText 5s linear infinite;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .header p{
+    color: #b0b0cf;
+    font-size: 1rem;
+    margin-top: 4px;
+  }
+
+  @keyframes rgbText {
+    0% { background-position: 0%; }
+    100% { background-position: 300%; }
+  }
+
+  /* ভিডিও সেকশন স্টাইল */
+  .video-box-container {
+    text-align: center;
+    margin: 10px auto 25px auto;
+    position: relative;
+    z-index: 1;
+    padding: 0 15px;
+  }
+
+  .video-caption {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 15px;
+    padding: 8px 22px;
+    background: rgba(255, 0, 127, 0.15);
+    border: 1px solid rgba(255, 0, 127, 0.4);
+    border-radius: 30px;
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  }
+
+  .video-caption i {
+    color: #00f2fe;
+    animation: pulseIcon 1.5s infinite;
+  }
+
+  @keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+  }
+
+  /* ভিডিও কার্ড ফ্রেম (RGB বর্ডার) */
+  .video-frame-wrapper {
+    position: relative;
+    padding: 3px;
+    background: linear-gradient(135deg, #00f2fe, #ff007f, #7000ff);
+    background-size: 300% 300%;
+    animation: rgbBorder 6s ease infinite;
+    border-radius: 18px;
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.35);
+    display: inline-block;
+    max-width: 100%;
+  }
+
+  .video-frame-inner {
+    background: #0f0f1a;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .video-frame-inner iframe {
+    border: none;
+    display: block;
+    max-width: 100%;
+  }
+
+  /* সার্চ বক্স */
+  .search-area{
+    max-width:650px;
+    margin:10px auto 25px auto;
+    padding:0 15px;
+    position: relative;
+    z-index: 1;
+  }
+  #searchBox{
+    width:100%;
+    padding:13px 22px;
+    border-radius:30px;
+    border:1px solid #2a2a35;
+    outline:none;
+    background:#15151c;
+    color:white;
+    font-size:15px;
+    transition:0.3s;
+  }
+  #searchBox:focus{
+    border-color:#ff0055;
+    box-shadow:0 0 12px rgba(255, 0, 85, 0.4);
+  }
+
+  /* ভিডিও গ্রিড */
+  .video-grid{
+    max-width:1400px;
+    margin:auto;
+    padding:15px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));
+    gap:22px 18px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* RGB বর্ডার */
+  .video-card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    text-decoration:none;
+    color:inherit;
+    border-radius:16px;
+    padding:2px;
+    cursor:pointer;
+    background:linear-gradient(60deg, #ff0000, #ff7300, #ffee00, #00ff66, #00c3ff, #7a00ff, #ff00aa, #ff0000);
+    background-size:400% 400%;
+    animation:rgbAnimation 8s ease infinite;
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  @keyframes rgbBorder{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  @keyframes rgbAnimation{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  .video-card:hover{
+    transform:translateY(-5px) scale(1.01);
+    box-shadow:0 0 18px rgba(0, 195, 255, 0.4), 0 0 25px rgba(255, 0, 100, 0.3);
+  }
+
+  .card-inner{
+    background:#131318;
+    border-radius:14px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    padding:7px;
+  }
+
+  /* থাম্বনেইল বক্স */
+  .thumb-container{
+    width:100%;
+    aspect-ratio:16 / 9;
+    position:relative;
+    border-radius:10px;
+    overflow:hidden;
+    background:#050508;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .thumb-container img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+  }
+
+  .play-btn{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    width:52px;
+    height:52px;
+    background:rgba(0,0,0,0.65);
+    backdrop-filter:blur(3px);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:20px;
+    padding-left:4px;
+    transition:all 0.25s ease;
+    box-shadow:0 4px 15px rgba(0,0,0,0.6);
+  }
+  .video-card:hover .play-btn{
+    background:#ff0000;
+    transform:translate(-50%, -50%) scale(1.15);
+  }
+
+  .card-info{
+    padding:12px 6px 6px;
+    text-align:center;
+  }
+  .card-title{
+    font-size:16px;
+    font-weight:600;
+    color:#f1f1f1;
+    letter-spacing:0.3px;
+  }
+
+  .no-result{text-align:center;color:#888;padding:60px 10px;display:none;position: relative;z-index: 1;}
+
+  @media(max-width:500px){
+    .header h1 { font-size: 1.7rem; }
+    .video-grid{grid-template-columns:1fr; gap:18px; padding:12px;}
+    .play-btn{width:46px; height:46px; font-size:18px;}
+    .video-frame-inner iframe {
+      width: 100% !important;
+      max-width: 320px;
+    }
+  }
+</style>
+</head>
+<body>
+
+    <!-- ব্যাকগ্রাউন্ড গ্লো ইফেক্ট -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <!-- ১. হেডার এরিয়া -->
+    <div class="header">
+        <h1>Viral 1000+ video link</h1>
+        <p>আমাদের সকল লিংক এক ঠিকানায়</p>
+        <p>পাঁচটি ভিডিও ওয়েবসাইটের লিংক একসাথে দেওয়া আছে</p>
+    </div>
+
+    <!-- ২. ভিডিও সেকশন -->
+    <div class="video-box-container">
+        <div class="video-caption">
+            <i class="fa-solid fa-play-circle"></i> যেভাবে ভিডিও দেখবেন দেখে নিন
+        </div>
+        
+        <div class="video-frame-wrapper">
+            <div class="video-frame-inner">
+                <iframe allowfullscreen='allowfullscreen'
+                        webkitallowfullscreen='webkitallowfullscreen'
+                        mozallowfullscreen='mozallowfullscreen'
+                        width='320' height='266'
+                        src='https://www.blogger.com/video.g?token=AD6v5dxlHV_pwRupKr9GcUzHPwHa0ZBZk4ma0Eil9QqypzeOK7N30y5U0RgF-8p0XKYp3Gz7aifoDIMhldySSRwoyA'
+                        class='b-hbp-video b-uploaded'
+                        frameborder='0'>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-area">
+      <input type="text" id="searchBox" placeholder="🔍 ভিডিও খুঁজুন (যেমন: 1, 2 বা ভাইরাল ভিডিও)..." oninput="searchVideos()">
+    </div>
+
+    <div class="video-grid" id="videoGrid"></div>
+    <div class="no-result" id="noResult">কোনো ভিডিও পাওয়া যায়নি।</div>
+
+<script>
+// ==========================================================
+// ১. এখানে ২০০টি ভিডিও লিঙ্ক পরপর পেস্ট করুন (কোটেশন/কমা ছাড়া)
+// ==========================================================
+const rawVideos = `
+https://pdiskvideo.in/UY3RPr90u1Rce9qdvef1A4iWA
+https://pdiskvideo.in/IZ52q6va3aDz1UZNEvMtDE9REp
+https://vplayer.in/W5BaFfLJqhonN1tbkvcVxew
+https://vplayer.in/XDa62yega2rjHybnvVvuzed4N
+https://pdiskvideo.in/uWWy4Ipm0o7LUGaoLjHCWs
+https://vplayer.in/RmgdMdcwNxECsE3HtETZ5Y1J
+https://pdiskvideo.in/MziNtZUXXbcw4kXZG6qip7
+https://Vdiskpro.com/05OWBfxWWh9gywXhPk8GAng
+https://Vdiskpro.com/bRiVTrKqkrG6U9skSOGS3m9
+https://pdiskvideo.in/WmUSlsxWeLn16Bo9BoaJ9xSHF
+https://Vdiskpro.com/Psb7anh8iqxTB6C14Nd3rwzxTg
+https://pdiskvideo.in/gD1zwu1824wxGTAmVtRf4n
+https://Vdiskpro.com/vvJfJRVpFHCDfsop4MQTpyAIS
+https://Vdiskpro.com/fEPk7ferVX4XJMb1aF6ypZMl5
+https://vplayer.in/URkR4pfbTK02siMsNj61lD0x
+https://pdiskvideo.in/cSNRf9WrVUeJyq0mUS1bUk9e
+https://vplayer.in/PE4GCYFZIiUAhIqpE27I3yK0
+https://pdiskvideo.in/x8J9prTqy5MtRWQujczKx5
+https://pdiskvideo.in/Bdxh7eT7MoegMYElHmZ0yI
+https://vplayer.in/9FrlwPL6aW2TAu8wpStJo6
+https://vplayer.in/zEusa0aiLpDOYbZ4CLiNexkd
+https://pdiskvideo.in/hX7YJhFOybkfFGMcAf0wPd1e
+https://Vdiskpro.com/Q1TDnazqmHgWrJoQb4yAIBk
+https://vplayer.in/CdL1LG3GLKuTUXxxsLyfhy
+https://pdiskvideo.in/o7zVf19BInKDJQxMbWeZfr
+https://vplayer.in/rqgZHrMZDDXIuCOCZsrom7EOUd
+https://vplayer.in/ydsntZ3gmvNYkGnexoBlroTzI
+https://pdiskvideo.in/PteZ1d32iZQyeBoqA874Bqr
+https://pdiskvideo.in/5rkn67yFQCbwPw52YQIrwTT
+https://pdiskvideo.in/7vpVdyeCZZWO9FlGOnFlewJq
+https://vplayer.in/3zRvkr8jbe5NjXZxdShGqEEQ
+https://pdiskvideo.in/9RzhYA6Hc7dQAC8yxUTt2Nh
+https://pdiskvideo.in/sUuWH5XkAGB7DCN2XYnqePH
+https://Vdiskpro.com/CZUldkTLMenXDWQAlaidVlOsX
+https://pdiskvideo.in/yPR7JYW4J74Kh3nR7IhL6p
+https://Vdiskpro.com/D2YcrdLyAZoGRLySiLq67N
+https://vplayer.in/BF0LyIcwC9CyuaskHxme0B
+https://Vdiskpro.com/sT4YNDzKuyISDUkd5RegboOpkp
+https://Vdiskpro.com/HcDSGJ6gjjWRVrx5dvVYUEoi
+https://pdiskvideo.in/dPQGVdMfRIwew3Hw6kSKyhF7k
+https://vplayer.in/IAizwXHZWBZD3pe59urIX4
+https://Vdiskpro.com/Ea06r8WPzivR5frmkrPjl9Cr
+https://pdiskvideo.in/8MqDD4xISjWCZPz5hr984T
+https://pdiskvideo.in/USuNBSifqX5lO4ecyQcGjWt
+https://vplayer.in/ha14L70rLynFK2zK2qFKY1Y
+https://Vdiskpro.com/aY35Fntj8rQYpVG7nIVCMa
+https://Vdiskpro.com/ROtBClKNbVx3zl02x4PdTlJ9
+https://vplayer.in/hAbOW1X1XGrgq0xBmoJ8nK8Ez
+https://pdiskvideo.in/sdAdq1JubzgEoB0DWv7v5UbN
+https://vplayer.in/Vy8uIELlAo3Jnw2981OaPM3Ykh
+https://Vdiskpro.com/vrO3w7MsO9EeXgc9hNTFSP1i
+https://Vdiskpro.com/fa7nHBPE0IpiJrAcyEiwws
+https://Vdiskpro.com/fWYrUpAK2KXBItMlaIIz7Lb
+https://vplayer.in/7L8nCHYYSUKoZUKhc2x1uOfJ
+https://vplayer.in/0hnnBqLcLTI3GtUxerw2gSScd
+https://pdiskvideo.in/V8jLZUjUeT6AJmLkF8e9jytR
+https://Vdiskpro.com/jMvvnF2zZ5wvilCXxWU51n
+https://Vdiskpro.com/PiyGMdEYXw3TO44pdLGH2Is7
+https://Vdiskpro.com/pUMXIWLFMMd4VUzivUM1APw
+https://vplayer.in/6xPZ6cXOcpfdhmMlGGdiIhIyS
+https://pdiskvideo.in/b7d6XqqYUwvDIzZpVdVDegGl2
+https://Vdiskpro.com/njJUwTfNKRs95CYvXsqy3Rfoza
+https://vplayer.in/oPXEeHFAFe1vSIqLvmldY9Zt8
+`;
+
+// ==========================================================
+// ২. এখানে ২০০টি ছবির লিঙ্ক পরপর পেস্ট করুন (কোটেশন/কমা ছাড়া)
+// ==========================================================
+const rawThumbnails = `
+https://yourimageshare.com/ib/pw4IW9mo9p.jpg
+https://yourimageshare.com/ib/kJZEgchDtg.jpg
+https://yourimageshare.com/ib/zwF5NDaeyE.jpg
+https://yourimageshare.com/ib/RAnTQr1KaD.jpg
+https://yourimageshare.com/ib/1G31do8t3Z.jpg
+https://yourimageshare.com/ib/LIccHdf7UO.jpg
+https://yourimageshare.com/ib/lc3gq6x5aJ.jpg
+https://yourimageshare.com/ib/2C2eezXmQ0.jpg
+https://yourimageshare.com/ib/xMA5AUjmcU.jpg
+https://yourimageshare.com/ib/Ggw3k4IQIj.jpg
+https://yourimageshare.com/ib/dkutV72fYR.jpg
+https://yourimageshare.com/ib/tibf7s8tUm.jpg
+https://yourimageshare.com/ib/bIzLjOoNTd.jpg
+https://yourimageshare.com/ib/yHRUIluOa5.jpg
+https://yourimageshare.com/ib/bRWBePCNNe.jpg
+https://yourimageshare.com/ib/IThnPjFTX9.jpg
+https://yourimageshare.com/ib/DwQmm18juI.jpg
+https://yourimageshare.com/ib/0f3fZKEQP1.jpg
+https://yourimageshare.com/ib/3ZKbrVtt9Y.jpg
+https://yourimageshare.com/ib/Lcfxg9eIcJ.jpg
+https://yourimageshare.com/ib/PJ2WDtuLYO.jpg
+https://yourimageshare.com/ib/23gyWclfvQ.jpg
+https://yourimageshare.com/ib/8CKGHxkagh.jpg
+https://yourimageshare.com/ib/w1JmYCE0Ed.jpg
+https://yourimageshare.com/ib/kmAVMGOUr9.jpg
+https://yourimageshare.com/ib/CWoRbDWlLG.jpg
+https://yourimageshare.com/ib/BHDFCvqYwr.jpg
+https://yourimageshare.com/ib/fk8uHpghm6.jpg
+https://yourimageshare.com/ib/5SivTEsTtZ.jpg
+https://yourimageshare.com/ib/CRuj5NVuXF.jpg
+https://yourimageshare.com/ib/VH1vgd9RrB.jpg
+https://yourimageshare.com/ib/6PZ63DBZJd.jpg
+https://yourimageshare.com/ib/IDKDtJNrh7.jpg
+https://yourimageshare.com/ib/0MOOh0JWbH.jpg
+https://yourimageshare.com/ib/cXYg12B4OC.jpg
+https://yourimageshare.com/ib/F7xOMu2TH4.jpg
+https://yourimageshare.com/ib/QPMRs2qJoI.jpg
+https://yourimageshare.com/ib/8sCi2zglHj.jpg
+https://yourimageshare.com/ib/PXalSdu2cq.jpg
+https://yourimageshare.com/ib/IQznDcDsJH.jpg
+https://yourimageshare.com/ib/tH9ghxRGJJ.jpg
+https://yourimageshare.com/ib/WdcEHTVq87.jpg
+https://yourimageshare.com/ib/lkrShp2yEq.jpg
+https://yourimageshare.com/ib/08cLKH7mE7.jpg
+https://yourimageshare.com/ib/UATSGHVsqa.jpg
+https://yourimageshare.com/ib/aK6JfvsaTz.jpg
+https://yourimageshare.com/ib/qj45sC5Aww.jpg
+https://yourimageshare.com/ib/o22hPxPJFM.jpg
+https://yourimageshare.com/ib/eO2gzYEslE.jpg
+https://yourimageshare.com/ib/dgscryuelF.jpg
+https://yourimageshare.com/ib/0p27KCn4St.jpg
+https://yourimageshare.com/ib/UJea5fJm91.jpg
+https://yourimageshare.com/ib/2ZNhQ42W8X.jpg
+https://yourimageshare.com/ib/J9ZhnWA3JN.jpg
+https://yourimageshare.com/ib/88pMdU5b5X.jpg
+https://yourimageshare.com/ib/to02WmqSVM.jpg
+https://yourimageshare.com/ib/HeZVtRTxR1.jpg
+https://yourimageshare.com/ib/xnTJb92OHt.jpg
+https://yourimageshare.com/ib/NFFJ10fEzg.jpg
+https://yourimageshare.com/ib/NDDpzMAcZj.jpg
+https://yourimageshare.com/ib/H12x7l4BZn.jpg
+https://yourimageshare.com/ib/Lew5E5KE0h.jpg
+https://yourimageshare.com/ib/ahzahGE88u.jpg
+`;
+
+// অটো-লিস্ট পার্সার
+const videos = rawVideos.trim().split(/\r?\n/).map(url => url.trim()).filter(Boolean);
+const thumbnails = rawThumbnails.trim().split(/\r?\n/).map(url => url.trim()).filter(Boolean);
+
+function getTitle(index){
+  return `ভাইরাল ভিডিও - ${index + 1}`;
+}
+
+function renderVideos(filteredIndices){
+  const grid = document.getElementById("videoGrid");
+  const noResult = document.getElementById("noResult");
+  grid.innerHTML = "";
+
+  if(!filteredIndices.length){
+    noResult.style.display = "block";
+    return;
+  }
+  noResult.style.display = "none";
+
+  filteredIndices.forEach(index => {
+    const url = videos[index];
+    const thumb = thumbnails[index] || "";
+    const title = getTitle(index);
+
+    const card = document.createElement("a");
+    card.className = "video-card";
+    card.href = url;
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
+
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="thumb-container">
+          <img src="${thumb}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360?text=No+Image'">
+          <div class="play-btn">▶</div>
+        </div>
+        <div class="card-info">
+          <div class="card-title">${title}</div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function searchVideos(){
+  const keyword = document.getElementById("searchBox").value.toLowerCase().trim();
+  const matchedIndices = [];
+
+  videos.forEach((_, index) => {
+    const title = getTitle(index).toLowerCase();
+    if(title.includes(keyword) || (index + 1).toString().includes(keyword)){
+      matchedIndices.push(index);
+    }
+  });
+
+  renderVideos(matchedIndices);
+}
+
+// লোড করার কোড
+const initialIndices = videos.map((_, i) => i);
+renderVideos(initialIndices);
+</script>
+
+</body>
+</html>
